@@ -1,0 +1,45 @@
+#----------------------------------------------#
+#                    Ostrich                   #
+#                  Version 1.0                 #
+#             English Language File            #
+#              Released 2022-06-18             #
+#----------------------------------------------#
+
+#---------- General Config Options ------------#
+# Messages to players that don't quite fit in anywhere else.
+
+# Sent in the chat in regions where flight is blocked. May be superseded by other conditions.
+flightNotAllowedInRegion: "Flight is not allowed in this region!"
+
+# Sent in the chat in regions where flight is blocked. May be superseded by other conditions.
+elytraNotAllowedInRegion: "Elytras are not allowed in this region!"
+
+#---------------- WorldGuard ------------------#
+# Related to features derived from the WorldGuard integration.
+
+# WorldGuard flags are not able to be dynamically localized.
+# These are set based off the "fallbackLanguageString" parameter in config.yml
+flightFlagName: "allow-flight"
+elytraFlagName: "allow-elytras"
+
+#-------------- GriefPrevention ---------------#
+# Language options derived from the GriefPrevention integration.
+
+gpClaimFlightFlagName: "allow-flight-in-claims"
+gpClaimElytraFlagName: "allow-elytras-in-claims"
+
+# If both are disabled this message is superseded by flightNotAllowedInRegion.
+# Sent in the chat when flight is restricted in claims but not in the whole region.
+flightNotAllowedInClaims: "Flight is not allowed in claims!"
+
+# If both are disabled, this message is superseded by elytraNotAllowedInRegion.
+# Sent in the chat when elytras are restricted in claims but not in the whole region.
+elytraNotAllowedInClaims: "Elytras are not allowed in claims!"
+
+# Supersedes flightNotAllowedInRegion
+# Sent in chat the region only allows flight in claims.
+flightAllowedInClaims: "Flight is not allowed outside of claims!"
+
+# Supersedes elytraNotAllowedInRegion
+# Sent in the chat when the region only allows elytras in claims.
+elytraAllowedInClaims: "Elytras are not allowed outside of claims!"

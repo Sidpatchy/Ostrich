@@ -1,0 +1,40 @@
+name: Ostrich
+version: '${version}'
+main: com.sidpatchy.ostrich.Ostrich
+api-version: 1.18
+prefix: Ostrich
+authors: [ Sidpatchy ]
+load: POSTWORLD
+description: Protector of the sky.
+depend:
+  - Albatross
+  - WorldGuard
+softdepend:
+  - GriefPrevention
+commands:
+  ostrich:
+    description: Main command for Ostrich.
+
+permissions:
+  ostrich.*:
+    description: Gives the player all permissions for Ostrich.
+    default: op
+    children:
+      ostrich.command: true
+      ostrich.reload: true
+      ostrich.bypass.*: true
+
+  ostrich.command:
+    description: Allows the player to use /ostrich
+    default: true
+  ostrich.reload:
+    description: Allows the player to reload Ostrich (/ostrich reload)
+    default: false
+
+  ostrich.bypass.flight:
+    description: Allows users to bypass ALL flight restrictions using /ostrich bypass flight
+    default: false
+
+  ostrich.bypass.elytra:
+      description: Allows users to bypass ALL elytra restrictions using /ostrich bypass elytra
+      default: false

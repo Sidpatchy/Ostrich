@@ -1,0 +1,23 @@
+#----------------------------------------------#
+#                    Ostrich                   #
+#                  Version 1.0                 #
+#              Released 2022-06-18             #
+#----------------------------------------------#
+
+# Language to default to when localizations are not available.
+# This is also used when dynamic localization is not possible.
+# Value should be ISO 639-3 and fully translated.
+fallbackLanguageString: eng
+
+checkForUpdates: true
+
+bStatsEnabled: true
+
+#----------------- WorldGuard------------------#
+# Config options derived from the WorldGuard integration
+
+#-------------- GriefPrevention ---------------#
+# Config options derived from the GriefPrevention integration
+
+# Whether the plugin should integrate with GriefPrevention when present.
+enableGriefPreventionIntegration: true
