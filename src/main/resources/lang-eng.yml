@@ -1,8 +1,8 @@
 #----------------------------------------------#
 #                    Ostrich                   #
-#                  Version 1.0                 #
+#                  Version 0.1                 #
 #             English Language File            #
-#              Released 2022-06-18             #
+#              Updated 2022-06-18              #
 #----------------------------------------------#
 
 #---------- General Config Options ------------#
@@ -43,3 +43,8 @@ flightAllowedInClaims: "Flight is not allowed outside of claims!"
 # Supersedes elytraNotAllowedInRegion
 # Sent in the chat when the region only allows elytras in claims.
 elytraAllowedInClaims: "Elytras are not allowed outside of claims!"
+
+# Supersedes like everything sometimes
+# Sent in the chat when the player must be a claim member to use flight/elytra (in a claim).
+claimMembershipRequiredToFly: "Flight is only allowed for members of claims!"
+claimMembershipRequiredToElytra: "Elytras are only allowed for members of claims!"

@@ -19,7 +19,7 @@ import java.io.IOException;
 /**
  * @author Sidpatchy
  * @since June 2022
- * @version 1.0
+ * @version 0.1
  */
 public final class Ostrich extends JavaPlugin {
     // Related to config parameters and other plugin options
@@ -42,6 +42,8 @@ public final class Ostrich extends JavaPlugin {
     // Related to GriefPrevention integration
     private boolean enableGriefPreventionIntegration;
     private boolean griefPreventionEnabled;
+    private boolean allowAdminClaimFlight;
+    private boolean allowAdminClaimElytra;
     private static DataStore dataStore;
     private String gpFlightFlagName;
     private String gpElytraFlagName;
@@ -108,7 +110,7 @@ public final class Ostrich extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String commandName, String[] args) {
-        sender.sendMessage(((Player) sender).getLocale());
+        sender.sendMessage(((Player) sender).getLocale()); // LOL debug code that I haven't replaced with actual features yet
         return true;
     }
 

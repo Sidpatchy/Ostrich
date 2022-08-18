@@ -24,7 +24,7 @@ public class FlightBlockerRunnable implements Runnable{
     @Override
     public void run() {
 
-        AlbatrossLanguageManager languageManager = new AlbatrossLanguageManager("eng", plugin);
+        AlbatrossLanguageManager languageManager = new AlbatrossLanguageManager(plugin.getFallbackLanguageString(), plugin);
 
         StateFlag regionFlightFlag = (StateFlag) WorldGuard.getInstance().getFlagRegistry().get(plugin.getFlightFlagName());
 
@@ -36,6 +36,9 @@ public class FlightBlockerRunnable implements Runnable{
         // This took an embarrassing amount of time to figure out because I was initially forgetting to check if the
         // player was even in a claim.
         if (set.testState(localPlayer, regionFlightFlag)) {
+
+            if (player.hasPermission("ostrich.bypass.flight")) { return; }
+
             // Flight is allowed in the region
             if (plugin.isGriefPreventionEnabled()) {
                 Claims claims = new Claims();
@@ -43,11 +46,20 @@ public class FlightBlockerRunnable implements Runnable{
                 if (claims.isPlayerInClaim(player)) {
                     // Player is inside a claim
 
+                    if (claims.getClaimFromPlayer(player).isAdminClaim() &&
+                            player.hasPermission("ostrich.griefprevention.adminclaims.flight")) {
+                        return;
+                    }
+
                     StateFlag claimFlightFlag = (StateFlag) WorldGuard.getInstance().getFlagRegistry().get(plugin.getGpFlightFlagName());
                     if (!set.testState(localPlayer, claimFlightFlag)) {
                         // Flight is not allowed in claims
                         disableFlight(languageManager.getLocalizedString("flightNotAllowedInClaims", player));
-                    } //else, flight is allowed in claims, do nothing
+                    }
+                    else {
+                        // flight is allowed in claims, check if membership is required.
+                        shouldPlayerReallyBeAllowToFlyInClaim(player);
+                    }
                 } // else, player is not inside a claim, do nothing
             } //else, flight is allowed
         }
@@ -64,7 +76,11 @@ public class FlightBlockerRunnable implements Runnable{
                     if (!flightAllowedInClaims) {
                         // Flight is not allowed in claims
                         disableFlight(languageManager.getLocalizedString("flightNotAllowedInClaims", player));
-                    } //else, flight is allowed in claims, do nothing
+                    }
+                    else {
+                        // flight is allowed in claims, check if membership is required.
+                        shouldPlayerReallyBeAllowToFlyInClaim(player);
+                    }
                 }
                 else {
                     // Player is not inside a claim, disable flight.
@@ -94,5 +110,25 @@ public class FlightBlockerRunnable implements Runnable{
 
         // Send chat message to player.
         player.sendMessage(chatMessage);
+    }
+
+    /**
+     * Creative name, I know.
+     *
+     * Checks if player is required to be a member of a claim to fly in it.
+     * @param player
+     */
+    private void shouldPlayerReallyBeAllowToFlyInClaim(Player player) {
+        AlbatrossLanguageManager languageManager = new AlbatrossLanguageManager(plugin.getFallbackLanguageString(), plugin);
+
+        // Check if the player must be a member in order to fly inside claims.
+        if (player.hasPermission("ostrich.griefprevention.requireClaimMembership.flight")) {
+            Claims claims = new Claims();
+
+            if (!claims.isPlayerMemberInClaim(player, claims.getClaimFromPlayer(player))) {
+                // player is not a member of the claim
+                disableFlight(languageManager.getLocalizedString("claimMembershipRequiredToFly", player));
+            } // else, player is a member of the claim, do nothing.
+        } // else, player does not require membership, do nothing.
     }
 }

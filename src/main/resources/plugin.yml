@@ -15,6 +15,9 @@ commands:
   ostrich:
     description: Main command for Ostrich.
 
+
+# The below section is a nightmare, even I don't reference it during development.
+# Use this wiki page, save your sanity: https://github.com/Sidpatchy/Ostrich/wiki/Permissions
 permissions:
   ostrich.*:
     description: Gives the player all permissions for Ostrich.
@@ -31,6 +34,13 @@ permissions:
     description: Allows the player to reload Ostrich (/ostrich reload)
     default: false
 
+  ostrich.bypass.*:
+    description: Bypasses all ostrich permissions.
+    default: false
+    children:
+      ostrich.bypass.flight: true
+      ostrich.bypass.elytra: true
+
   ostrich.bypass.flight:
     description: Allows users to bypass ALL flight restrictions using /ostrich bypass flight
     default: false
@@ -38,3 +48,33 @@ permissions:
   ostrich.bypass.elytra:
       description: Allows users to bypass ALL elytra restrictions using /ostrich bypass elytra
       default: false
+
+  ostrich.griefprenvetion.adminclaims.*:
+    description: Disable all restrictions in admin claims.
+    default: false
+    children:
+      ostrich.griefprevention.adminclaims.flight: true
+      ostrich.griefprevention.adminclaims.elytra: true
+
+  ostrich.griefprevention.adminclaims.flight:
+    description: Allows the player to fly in an admin claim.
+    default: false
+
+  ostrich.griefprevention.adminclaims.elytra:
+    description: Allows the player to use an elytra in admin claims.
+    default: true
+
+  ostrich.griefprevention.requireClaimMembership.*:
+    description: Requires the player to have access permissions in a claim in order to use flight/elytra
+    default: false
+    children:
+      ostrich.griefprevention.requireClaimMembership.flight: true
+      ostrich.griefprevention.requireClaimMembership.elytra: true
+
+  ostrich.griefprevention.requireClaimMembership.flight:
+    description: Requires the player to have access permissions in a claim to use flight.
+    default: true
+
+  ostrich.griefprevention.requireClaimMembership.elytra:
+    description: Requires the player to have access permissions in a claim to use elytra.
+    default: false

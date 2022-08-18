@@ -1,7 +1,7 @@
 #----------------------------------------------#
 #                    Ostrich                   #
-#                  Version 1.0                 #
-#              Released 2022-06-18             #
+#                  Version 0.1                 #
+#               Updated 2022-06-18             #
 #----------------------------------------------#
 
 # Language to default to when localizations are not available.
@@ -12,6 +12,12 @@ fallbackLanguageString: eng
 checkForUpdates: true
 
 bStatsEnabled: true
+
+#------------------ Flight --------------------#
+# Parameters related to flight blocking
+
+#------------------ Elytra --------------------#
+# Parameters related to elytra blocking
 
 #----------------- WorldGuard------------------#
 # Config options derived from the WorldGuard integration

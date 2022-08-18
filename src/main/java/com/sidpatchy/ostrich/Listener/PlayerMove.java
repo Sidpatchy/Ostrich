@@ -1,5 +1,6 @@
 package com.sidpatchy.ostrich.Listener;
 
+import com.sidpatchy.ostrich.ElytraBlockerRunnable;
 import com.sidpatchy.ostrich.FlightBlockerRunnable;
 import com.sidpatchy.ostrich.Ostrich;
 import com.sidpatchy.ostrich.Util.GriefPrevention.Claims;
@@ -23,6 +24,10 @@ public class PlayerMove implements Listener {
         if (player.isFlying()) {
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
                     new FlightBlockerRunnable(plugin, player), 0);
+        }
+        if (player.isGliding()) {
+            plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
+                    new ElytraBlockerRunnable(plugin, player), 0);
         }
     }
 }
