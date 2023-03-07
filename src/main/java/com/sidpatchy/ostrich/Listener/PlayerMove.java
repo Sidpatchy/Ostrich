@@ -4,6 +4,7 @@ import com.sidpatchy.ostrich.ElytraBlockerRunnable;
 import com.sidpatchy.ostrich.FlightBlockerRunnable;
 import com.sidpatchy.ostrich.Ostrich;
 import com.sidpatchy.ostrich.Util.GriefPrevention.Claims;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,6 +21,11 @@ public class PlayerMove implements Listener {
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
+
+        // Prevent unnecessary code execution by checking if the player has moved blocks.
+        if (event.getTo() != null && event.getFrom().getBlock().getLocation() == event.getTo().getBlock().getLocation()) {
+            return;
+        }
 
         if (player.isFlying()) {
             plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin,
