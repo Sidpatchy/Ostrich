@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'com.sidpatchy'
-version = '1.0-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
@@ -26,8 +26,8 @@ configurations {
 }
 
 dependencies {
-    compileOnly 'org.spigotmc:spigot-api:1.18-R0.1-SNAPSHOT'
-    implementation 'com.github.Sidpatchy:Albatross:607ef7d6b9'
+    compileOnly 'org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT'
+    implementation 'com.github.Sidpatchy:Albatross:1.1.1'
     implementation 'com.github.TechFortress:GriefPrevention:16.18'
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
     shadow 'org.bstats:bstats-bukkit:3.0.0'
@@ -50,12 +50,8 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 processResources {
-    def props = [version: version]
-    inputs.properties props
     filteringCharset 'UTF-8'
-    filesMatching('plugin.yml') {
-        expand props
-    }
+    expand(project.properties)
 }
 
 shadowJar {

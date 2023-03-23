@@ -1,7 +1,7 @@
 name: Ostrich
-version: '${version}'
+version: '${project.version}'
 main: com.sidpatchy.ostrich.Ostrich
-api-version: 1.18
+api-version: 1.19
 prefix: Ostrich
 authors: [ Sidpatchy ]
 load: POSTWORLD
@@ -14,7 +14,6 @@ softdepend:
 commands:
   ostrich:
     description: Main command for Ostrich.
-
 
 # The below section is a nightmare, even I don't reference it during development.
 # Use this wiki page, save your sanity: https://github.com/Sidpatchy/Ostrich/wiki/Permissions

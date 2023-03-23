@@ -1,8 +1,8 @@
 #----------------------------------------------#
 #                    Ostrich                   #
-#                  Version 0.1                 #
+#                  Version 1.0                 #
 #             English Language File            #
-#              Updated 2022-06-18              #
+#              Updated 2023-03-22              #
 #----------------------------------------------#
 
 #---------- General Config Options ------------#
@@ -48,3 +48,25 @@ elytraAllowedInClaims: "Elytras are not allowed outside of claims!"
 # Sent in the chat when the player must be a claim member to use flight/elytra (in a claim).
 claimMembershipRequiredToFly: "Flight is only allowed for members of claims!"
 claimMembershipRequiredToElytra: "Elytras are only allowed for members of claims!"
+
+#---------------- Help Command ----------------#
+# Sent as the help text for /ostrich help
+ostrichHelp: "Lists all commands in Ostrich."
+
+# Sent as the help text for /ostrich info
+ostrichInfo: "Lists some info about Ostrich."
+
+# Sent as the help text for /ostrich reload
+ostrichReload: "Reloads the plugin's config files."
+
+#---------------- Info Command ----------------#
+infoVersion: "Version"
+infoAuthor: "Author"
+infoGitHub: "GitHub"
+
+#--------------- Reload Command ---------------#
+# Sent when /ostrich reload is run successfully.
+reloadSuccessful: "Configuration files reloaded successfully!"
+
+# Sent when /ostrich reload fails.
+reloadFailed: "Failed to reload configuration files."

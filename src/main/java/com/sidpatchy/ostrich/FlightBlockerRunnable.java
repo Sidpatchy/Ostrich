@@ -9,9 +9,12 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import org.bukkit.block.Block;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.util.Vector;
+
+import java.io.IOException;
 
 public class FlightBlockerRunnable implements Runnable {
 
@@ -39,15 +42,27 @@ public class FlightBlockerRunnable implements Runnable {
 
         if (set.testState(localPlayer, regionFlightFlag)) {
             if (plugin.isGriefPreventionEnabled()) {
-                handlePlayerInGriefPreventionClaim(set, localPlayer);
+                try {
+                    handlePlayerInGriefPreventionClaim(set, localPlayer);
+                } catch (IOException | InvalidConfigurationException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         else {
             if (plugin.isGriefPreventionEnabled()) {
-                handleNonFlightRegionWithGriefPrevention(set, localPlayer);
+                try {
+                    handleNonFlightRegionWithGriefPrevention(set, localPlayer);
+                } catch (IOException | InvalidConfigurationException e) {
+                    throw new RuntimeException(e);
+                }
             }
             else {
-                disableFlight(languageManager.getLocalizedString("flightNotAllowedInRegion", player));
+                try {
+                    disableFlight(languageManager.getLocalizedString("flightNotAllowedInRegion", player));
+                } catch (IOException | InvalidConfigurationException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
     }
@@ -57,7 +72,7 @@ public class FlightBlockerRunnable implements Runnable {
      * @param set the region that the player is in
      * @param localPlayer a WorldGuard LocalPlayer
      */
-    private void handlePlayerInGriefPreventionClaim(ApplicableRegionSet set, LocalPlayer localPlayer) {
+    private void handlePlayerInGriefPreventionClaim(ApplicableRegionSet set, LocalPlayer localPlayer) throws IOException, InvalidConfigurationException {
 
         Claims claims = new Claims();
 
@@ -85,7 +100,7 @@ public class FlightBlockerRunnable implements Runnable {
      * @param set the region that the player is in
      * @param localPlayer a WorldGuard LocalPlayer
      */
-    private void handleNonFlightRegionWithGriefPrevention(ApplicableRegionSet set, LocalPlayer localPlayer) {
+    private void handleNonFlightRegionWithGriefPrevention(ApplicableRegionSet set, LocalPlayer localPlayer) throws IOException, InvalidConfigurationException {
 
         Claims claims = new Claims();
         StateFlag claimFlightFlag = (StateFlag) WorldGuard.getInstance().getFlagRegistry().get(plugin.getGpFlightFlagName());
@@ -104,7 +119,7 @@ public class FlightBlockerRunnable implements Runnable {
      * Determines what message should be sent if the player is not in a GriefPrevention claim.
      * @param flightAllowedInClaims
      */
-    private void handlePlayerNotInGriefPreventionClaim(boolean flightAllowedInClaims) {
+    private void handlePlayerNotInGriefPreventionClaim(boolean flightAllowedInClaims) throws IOException, InvalidConfigurationException {
 
         if (flightAllowedInClaims) {
             disableFlight(languageManager.getLocalizedString("flightAllowedInClaims", player));
@@ -120,7 +135,7 @@ public class FlightBlockerRunnable implements Runnable {
      * @param player the player to check
      * @param claims an instance of Claims
      */
-    private void shouldPlayerReallyBeAllowToFlyInClaim(Player player, Claims claims) {
+    private void shouldPlayerReallyBeAllowToFlyInClaim(Player player, Claims claims) throws IOException, InvalidConfigurationException {
 
         if (player.hasPermission("ostrich.griefprevention.requireClaimMembership.flight") || player.hasPermission("ostrich.griefprevention.requireClaimMembership.*")) {
 
@@ -141,6 +156,13 @@ public class FlightBlockerRunnable implements Runnable {
         player.setFlying(false);
         player.setAllowFlight(false);
         player.setVelocity(new Vector(0, 0, 0));
+
+        // Prevent fall damage if enabled.
+        if (plugin.getFlightPreventFallDamage()) {
+            int blockY = player.getWorld().getHighestBlockAt(player.getLocation()).getY();
+            float distanceFromGround = (float) (player.getLocation().getY() - blockY);
+            player.setFallDistance((distanceFromGround + 10) * -1);
+        }
 
         // Send chat message to player.
         player.sendMessage(chatMessage);

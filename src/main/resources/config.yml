@@ -1,12 +1,12 @@
 #----------------------------------------------#
 #                    Ostrich                   #
-#                  Version 0.1                 #
-#               Updated 2022-06-18             #
+#                  Version 1.0                 #
+#              Updated 2023-03-20              #
 #----------------------------------------------#
 
 # Language to default to when localizations are not available.
 # This is also used when dynamic localization is not possible.
-# Value should be ISO 639-3 and fully translated.
+# Value should be an ISO 639-3 language code and fully translated.
 fallbackLanguageString: eng
 
 checkForUpdates: true
@@ -16,8 +16,14 @@ bStatsEnabled: true
 #------------------ Flight --------------------#
 # Parameters related to flight blocking
 
+# Whether fall damage should be prevented when disabling flight.
+flightPreventFallDamage: false
+
 #------------------ Elytra --------------------#
 # Parameters related to elytra blocking
+
+# Whether fall damage should be prevented when disabling elytras.
+elytraPreventFallDamage: false
 
 #----------------- WorldGuard------------------#
 # Config options derived from the WorldGuard integration

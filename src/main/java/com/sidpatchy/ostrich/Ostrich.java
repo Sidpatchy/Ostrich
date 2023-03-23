@@ -1,20 +1,28 @@
 package com.sidpatchy.ostrich;
 
+import com.sidpatchy.albatross.Albatross;
 import com.sidpatchy.albatross.File.AlbatrossConfiguration;
+import com.sidpatchy.albatross.File.AlbatrossLanguageManager;
+import com.sidpatchy.ostrich.Commands.CommandsTab;
+import com.sidpatchy.ostrich.Commands.HelpCommand;
+import com.sidpatchy.ostrich.Commands.InfoCommand;
 import com.sidpatchy.ostrich.Listener.PlayerMove;
 import com.sidpatchy.ostrich.Util.WorldGuard.FlagRegistry;
 import me.ryanhamshire.GriefPrevention.DataStore;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Sidpatchy
@@ -38,8 +46,11 @@ public final class Ostrich extends JavaPlugin {
     // Related to WorldGuard
     private String flightFlagName;
     private String elytraFlagName;
+    private boolean flightPreventFallDamage;
+    private boolean elytraPreventFallDamage;
 
     // Related to GriefPrevention integration
+    private GriefPrevention gp;
     private boolean enableGriefPreventionIntegration;
     private boolean griefPreventionEnabled;
     private boolean allowAdminClaimFlight;
@@ -47,10 +58,20 @@ public final class Ostrich extends JavaPlugin {
     private static DataStore dataStore;
     private String gpFlightFlagName;
     private String gpElytraFlagName;
+    private boolean flightRequireClaimMembership;
+    private boolean elytraRequireClaimMembership;
 
 
     @Override
     public void onLoad() {
+        // Verify that we are using the correct version of Albatross
+        Albatross albatross = (Albatross) getServer().getPluginManager().getPlugin("Albatross");
+        List<String> supportedVersions = List.of("v1.1.1", "v1.1.2");
+
+        if (!supportedVersions.contains(albatross.getVersion())) {
+            throw new RuntimeException("You are not running the correct version of Albatross (" + albatross.getVersion() + "). I currently only support " + supportedVersions + "!");
+        }
+
         extractParametersFromConfig();
 
         this.getLogger().info("Attempting to register WorldGuard flags.");
@@ -63,7 +84,7 @@ public final class Ostrich extends JavaPlugin {
         // Initialize things related to GriefPrevention
         if (Bukkit.getPluginManager().getPlugin("GriefPrevention") != null) {
 
-            GriefPrevention gp = (GriefPrevention) Bukkit.getPluginManager().getPlugin("GriefPrevention");
+            gp = (GriefPrevention) Bukkit.getPluginManager().getPlugin("GriefPrevention");
             this.getLogger().info("GriefPrevention is present, enabling related features.");
             griefPreventionEnabled = true;
 
@@ -92,13 +113,14 @@ public final class Ostrich extends JavaPlugin {
 
         // Init things related to GriefPrevention that couldn't be enabled onLoad()
         if (griefPreventionEnabled) {
-            GriefPrevention gp = (GriefPrevention) Bukkit.getPluginManager().getPlugin("GriefPrevention");
             dataStore = gp.dataStore;
         }
 
         PluginManager pm = getServer().getPluginManager();
 
         pm.registerEvents(playerMove, this);
+
+        this.getCommand("ostrich").setTabCompleter(new CommandsTab());
 
         this.getLogger().info("Plugin enabled!");
     }
@@ -110,7 +132,60 @@ public final class Ostrich extends JavaPlugin {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String commandName, String[] args) {
-        sender.sendMessage(((Player) sender).getLocale()); // LOL debug code that I haven't replaced with actual features yet
+
+        if (!"ostrich".equalsIgnoreCase(command.getName()) || !sender.hasPermission("ostrich.command")) {
+            return false;
+        }
+
+        if (args.length == 0 || args.length == 1 && "help".equalsIgnoreCase(args[0])) {
+            try {
+                HelpCommand.getHelp(this, sender);
+            } catch (IOException | InvalidConfigurationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else if ("info".equalsIgnoreCase(args[0])) {
+            try {
+                InfoCommand.getInfo(this, sender);
+            } catch (IOException | InvalidConfigurationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else if ("reload".equalsIgnoreCase(args[0]) && sender.hasPermission("ostrich.reload")) {
+            this.reloadConfig();
+            extractParametersFromConfig();
+
+            AlbatrossLanguageManager languageManager = new AlbatrossLanguageManager(this.getFallbackLanguageString(), this);
+            String reloadSuccessful = null;
+            try {
+                reloadSuccessful = languageManager.getFallbackLocaleString("reloadSuccessful");
+            } catch (IOException | InvalidConfigurationException e) {
+                throw new RuntimeException(e);
+            }
+            String reloadFailed = null;
+            try {
+                reloadFailed = languageManager.getFallbackLocaleString("reloadFailed");
+            } catch (IOException | InvalidConfigurationException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (sender instanceof Player player) {
+                try {
+                    reloadSuccessful = languageManager.getLocalizedString("reloadSuccessful", player);
+                } catch (Exception ignored) {}
+                try {
+                    reloadFailed = languageManager.getLocalizedString("reloadFailed", player);
+                } catch (Exception ignored) {}
+            }
+
+            if (successfulLoad) {
+                sender.sendMessage(getPrefix() + reloadSuccessful);
+            }
+            else {
+                sender.sendMessage(getPrefix() + reloadFailed);
+            }
+        }
+
         return true;
     }
 
@@ -133,6 +208,11 @@ public final class Ostrich extends JavaPlugin {
         fallbackLanguageString = config.getString("fallbackLanguageString", "eng");
         checkForUpdates = config.getBoolean("checkForUpdates");
         bStatsEnabled = config.getBoolean("bStatsEnabled");
+        flightPreventFallDamage = config.getBoolean("flightPreventFallDamage");
+        elytraPreventFallDamage = config.getBoolean("elytraPreventFallDamage");
+        flightRequireClaimMembership = config.getBoolean("flightRequireClaimMembership");
+        elytraRequireClaimMembership = config.getBoolean("elytraRequireClaimMembership");
+
 
         // Config parameters related to WorldGuard
 
@@ -168,10 +248,16 @@ public final class Ostrich extends JavaPlugin {
     // Related to WorldGuard
     public String getFlightFlagName() { return flightFlagName; }
     public String getElytraFlagName() { return elytraFlagName; }
+    public boolean getFlightPreventFallDamage() { return flightPreventFallDamage; }
+    public boolean getElytraPreventFallDamage() { return elytraPreventFallDamage; }
 
     // Related to GriefPrevention
     public boolean isGriefPreventionEnabled() { return griefPreventionEnabled; }
     public static DataStore getDataStore() { return dataStore; }
     public String getGpFlightFlagName() { return gpFlightFlagName; }
     public String getGpElytraFlagName() { return gpElytraFlagName; }
+
+    public String getPrefix() {
+        return "[" + ChatColor.DARK_AQUA + ChatColor.BOLD + "Ostrich" + ChatColor.RESET +"] ";
+    }
 }
